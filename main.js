@@ -4,35 +4,50 @@ import { Digit } from './Digit.js';
 
 
 class LCDDisplay {
-  // number;
 
   arrayOfDigists;
   displayRows;
 
-  constructor(num) {
+  constructor(num, customWH = null) {
     this.arrayOfDigists = [];
-    this.displayRows = 3;
+    this.customWH = customWH;
+
+    if (this.customWH) {
+      this.customWH = this.validateCustomParams();
+    }
+
+    this.displayRows = this.customWH ? (this.customWH.h * 2) + 3 : 3;
 
     this.convert(num);
   }
 
 
   convert(number) {
-    // this.number = number;
     const numArr = this.convertIntNumberToArrOfNumbers(number);
     this.arrayOfDigists = this.createDigits(numArr);
-    // console.log(this.arrayOfDigists);
-    // this.show();
-    // return {show: () => this.show()}
   }
 
   convertIntNumberToArrOfNumbers(number) {
     return Array.from(String(number), (n) => Number(n));
-    // [1,2]
   }
 
   createDigits(numArr) {
-    return numArr.map(number => new Digit(number).getDigit());
+    return numArr.map(number => new Digit(number, this.customWH).getDigit());
+  }
+
+  validateCustomParams() {
+    const {w, h} = this.customWH;
+    if (typeof w !== 'number' || typeof h !== 'number') {
+      console.log('Width(w) and Height(h) must be numbers');
+      return null;
+    }
+
+    if (w < 3 || h < 2) {
+      console.log('The minimum values are w = 3 and h = 2');
+      return null;
+    }
+
+    return this.customWH;
   }
 
   show() {
@@ -48,13 +63,9 @@ class LCDDisplay {
     }
   }
 
-
-  // withCustomWidthAndHeight(w, h) {
-  // }
-
 }
 
-// const LCD = new LCDDisplay().convert(12345);
-const LCD = new LCDDisplay(12345);
+// const LCD = new LCDDisplay(123456789);
+const LCD = new LCDDisplay(123456789, {w: 3, h: 2});
 LCD.show();
 
